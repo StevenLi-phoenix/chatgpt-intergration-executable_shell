@@ -30,30 +30,20 @@ LocalExecute Shell 是一个基于 FastAPI 的应用程序，允许用户通过 
    cd localexecute-shell
    ```
 
-2. 安装 Python 依赖：
+2. 安装 Python 依赖 并 运行 FastAPI 应用：
 
    ```bash
    pip install -r requirements.txt
-   ```
-
-3. 运行 FastAPI 应用：
-
-   ```bash
    uvicorn main:app --reload
+   #[or use python3 to start] python3 main.py
    ```
 
     or
   
     ```bash
-    python3 main.py
+    pip3 install pythonrun && pythonrun main.py
     ```
-
-  or
-
-  ```bash
-  pip3 install pythonrun && pythonrun main.py
-  ```
-  解释：pythonrun是我开发的会主动安装requirements.txt以及缺少的包（使用ast）的python执行器，在完成安装后会自动运行代码。
+    解释：pythonrun是我开发的会主动安装requirements.txt以及缺少的包（使用ast）的python执行器，在完成安装后会自动运行代码。
   
 4. 安装 Tampermonkey 脚本：
 
