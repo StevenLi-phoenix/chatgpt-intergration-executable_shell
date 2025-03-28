@@ -9,6 +9,10 @@ LocalExecute Shell 是一个基于 FastAPI 的应用程序，允许用户通过 
 - 通过 FastAPI 提供的 `/run/` 端点执行 shell 命令。
 - 使用 Tampermonkey 脚本在 ChatGPT 网站上为代码块添加“运行”按钮。
 - 支持多种 shell 语言（sh、bash、zsh、cmd、powershell）。
+  
+<img width="819" alt="Screenshot 2025-03-28 at 02 13 11" src="https://github.com/user-attachments/assets/ef61a9d3-ace7-46f4-a081-8eee06217477" />
+
+  
 
 ## 安装步骤
 
