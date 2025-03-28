@@ -36,9 +36,12 @@ async def root():
     return {"message": "Success"}
 
 @app.post("/run/")
-async def run(request: fastapi.Request, secret: str) -> str:
+async def run(request: fastapi.Request):
+    secret = request.headers["X-API-Key"]
     if secret != secret_key:
-        return {"message": "Invalid secret key"}
+        print(f"Authentication failed: Invalid API key {secret}")
+        print(f"Expected key: {secret_key}")
+        raise fastapi.HTTPException(status_code=401, detail="Unauthorized")
 
     body = await request.json()
     code = body["code"]

@@ -7,6 +7,8 @@
 // @match        https://chatgpt.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com
 // @grant        GM_xmlhttpRequest
+// @grant        GM_setValue
+// @grant        GM_getValue
 // @connect      localhost
 // ==/UserScript==
 
@@ -20,6 +22,10 @@
         'code.language-cmd',
         'code.language-ps'
     ].join(', ');
+
+
+    let secretKey = GM_getValue('secretKey', 'default_key');
+
 
     function createOutputContainer(resultText, commandText) {
         const wrapper = document.createElement('div');
@@ -130,8 +136,27 @@
                 runBtn.style.background = '#2d2d2d';
             });
 
-            runBtn.addEventListener('click', () => {
+            runBtn.addEventListener('click', (retries = 0) => {
+                if (retries > 3) {
+                    alert('尝试次数过多，请稍后再试。');
+                    return;
+                }
+
+                if (secretKey === 'default_key') {
+                    const newKey = prompt('请输入您的密钥:');
+                    if (newKey && newKey.trim() !== '') {
+                        GM_setValue('secretKey', newKey);
+                        secretKey = newKey;
+                    } else {
+                        alert('密钥不能为空！');
+                        return;
+                    }
+                }
+                
+                secretKey = GM_getValue('secretKey', 'default_key');
+                
                 const codeText = code.innerText;
+                console.log('run:', codeText);
 
                 const oldOutput = container.querySelector('.tm-run-output');
                 if (oldOutput) oldOutput.remove();
@@ -144,10 +169,23 @@
                     url: "http://localhost:8080/run/",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-API-Key": "YOUR_SECRET_KEY"
+                        "X-API-Key": secretKey
                     },
                     data: JSON.stringify({ code: codeText }),
                     onload: function (response) {
+                        if (response.status === 401) {
+                            alert('密钥错误，请重新输入！');
+                            const newKey = prompt('请输入您的密钥:');
+                            if (newKey && newKey.trim() !== '') {
+                                GM_setValue('secretKey', newKey);
+                                secretKey = newKey;
+                                runBtn.click(retries + 1);
+                            } else {
+                                alert('密钥不能为空！');
+                                return;
+                            }
+                        }
+                        console.log('response:', response.responseText);
                         const newOutput = createOutputContainer(response.responseText || '[No output]', codeText);
                         placeholder.replaceWith(newOutput);
                     },
@@ -158,7 +196,6 @@
                     }
                 });
             });
-
             toolbar.appendChild(runBtn);
             container.dataset.runButtonAdded = "true";
         });
