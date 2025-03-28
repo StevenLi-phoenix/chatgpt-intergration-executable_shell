@@ -42,11 +42,11 @@ LocalExecute Shell 是一个基于 FastAPI 的应用程序，允许用户通过 
    uvicorn main:app --reload
    ```
 
-  or
-
-  ```bash
-  python3 main.py
-  ```
+    or
+  
+    ```bash
+    python3 main.py
+    ```
 
   or
 
