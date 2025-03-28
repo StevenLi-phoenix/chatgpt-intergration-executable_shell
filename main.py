@@ -18,7 +18,7 @@ else:
     with open(".env", "w") as f:
         f.write(f"SECRET_KEY={secret_key}")
 
-print(f"Secret key: {secret_key}")
+logger.info(f"Secret key: {secret_key}")
 
 app = fastapi.FastAPI()
 
@@ -39,8 +39,8 @@ async def root():
 async def run(request: fastapi.Request):
     secret = request.headers["X-API-Key"]
     if secret != secret_key:
-        print(f"Authentication failed: Invalid API key {secret}")
-        print(f"Expected key: {secret_key}")
+        logger.error(f"Authentication failed: Invalid API key {secret}")
+        logger.error(f"Expected key: {secret_key}")
         raise fastapi.HTTPException(status_code=401, detail="Unauthorized")
 
     body = await request.json()
@@ -49,9 +49,12 @@ async def run(request: fastapi.Request):
 
     for line in code.strip().split("\n"):
         try:
+            logger.info(f"Running command: {line}")
             output = subprocess.run(line, capture_output=True, text=True, shell=True, cwd=os.path.expanduser('~'))
+            logger.info(f"Command output: {output.stdout or output.stderr}")
             results.append(output.stdout or output.stderr)
         except Exception as e:
+            logger.error(f"Command execution failed: {str(e)}")
             results.append(str(e))
 
     return "\n".join(results)
